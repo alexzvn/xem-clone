@@ -40,4 +40,26 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function hasVoted(Post $post) : bool
+    {
+        return !!$this->vote()->where('post_id', $post->id)->count();
+    }
+
+    public function voteTo(Post $post, int $type = Vote::UP_VOTE)
+    {
+        return $post->vote()->save(
+            $this->vote()->create(compact('type'))
+        );
+    }
+
+    public function unVoteTo(Post $post)
+    {
+        return $this->vote()->where('post_id', $post->id)->delete();
+    }
+
+    public function vote()
+    {
+        return $this->hasMany(Vote::class);
+    }
 }
