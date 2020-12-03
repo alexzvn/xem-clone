@@ -23,6 +23,11 @@ class JwtGuard implements Guard
         $this->secret = $secret;
     }
 
+    /**
+     * Get user logged in
+     *
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
     public function user()
     {
         if (isset($this->user)) {
@@ -34,11 +39,24 @@ class JwtGuard implements Guard
         );
     }
 
+    /**
+     * Set user login
+     *
+     * @param Authenticatable $user
+     * @return $this
+     */
     public function login(Authenticatable $user)
     {
         return $this->setUser($user);
     }
 
+    /**
+     * Generate jwt token for current user
+     *
+     * @param array $options
+     * @param string $algo
+     * @return string
+     */
     public function generateJwt(array $options = [], string $algo = 'HS256')
     {
         $payload = [
@@ -51,11 +69,22 @@ class JwtGuard implements Guard
         return JWT::encode($payload, $this->secret, $algo);
     }
 
+    /**
+     * We don't need validate for jwt
+     *
+     * @param array $attr
+     * @return false
+     */
     public function validate(array $attr = [])
     {
         return false;
     }
 
+    /**
+     * Get payload from jwt
+     *
+     * @return object|null
+     */
     public function payload()
     {
         try {
@@ -65,6 +94,11 @@ class JwtGuard implements Guard
         }
     }
 
+    /**
+     * get jwt from request
+     *
+     * @return string|null
+     */
     public function getJwtFromRequest()
     {
         return $this->request->bearerToken() ??
